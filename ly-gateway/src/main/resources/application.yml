@@ -1,0 +1,50 @@
+server:
+  port: 10010
+spring:
+  application:
+    name: api-gateway
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+    registry-fetch-interval-seconds: 5
+zuul:
+  prefix: /api   #添加路由前缀
+  routes:
+    item-service: /item/** #商品微服务
+    search-service: /search/** #搜索微服务
+    user-service: /user/** #用户中心微服务
+    sms-service: /sms/** # 短信微服务
+    auth-service: /auth/** # 授权中心微服务
+    upload-service:
+      path: /upload/** #文件下载服务
+      serviceId: upload-service
+      strip-prefix: false
+  add-host-header: true #修改host头信息
+  sensitive-headers:
+hystrix:
+  command:
+    default: #这个不配默认是全局
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000 #线程超时,调用Fallback方法
+ribbon:
+  ConnectTimeout: 5000 #ribbon连接超时时长
+  ReadTimeout: 3500 #ribbon读取超时时长
+  MaxAutoRetries: 1 #每台服务器最多重试次数，但是首次调用不包括在内
+  MaxAutoRetriesNextServer: 0 #最多重试多少台服务器
+
+leyou:
+  jwt:
+    pubKeyPath:  C:\\tmp\\rsa\\rsa.pub # 公钥地址
+    cookieName: HHR_TOKEN # cookie的名称
+  filter: #拦截器白名单
+    allowPaths:
+      - /api/auth
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/code
+      - /api/item
+
